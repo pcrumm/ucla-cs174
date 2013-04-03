@@ -8,6 +8,11 @@
 
 #include <stdlib.h>
 
+/**
+ * Viewport-related global variables.
+ */
+GLint windowWidth, windowHeight, windowXPos, windowYPos;
+
 void drawGasket(void)
 {
 
@@ -49,10 +54,12 @@ int main(int argc, char **argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 
-    // Setup the window
-    glutInitWindowSize(500, 500);
-    glutInitWindowPosition(0, 0);
-    glutCreateWindow("title");
+    // Setup the window with some sensible defaults
+    windowXPos = windowYPos = 0;
+    windowWidth = windowHeight = 500;
+    glutInitWindowSize(windowWidth, windowHeight);
+    glutInitWindowPosition(windowXPos, windowYPos);
+    glutCreateWindow("CS174 - Assignment 1");
 
     // Event handlers
     registerEventHandlers();
