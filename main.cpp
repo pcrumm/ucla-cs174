@@ -7,6 +7,7 @@
 #endif
 
 #include <stdlib.h>
+#include "Angel.h"
 
 /**
  * Viewport-related global variables.
