@@ -18,7 +18,8 @@
  * Viewport-related global variables.
  */
 GLint windowWidth, windowHeight, windowXPos, windowYPos;
-const int numGasketPoints = 5000;
+const int numGasketPoints = 50000;
+int numDrawnPoints;
 int mainWindow;
 GLint redDraw = 1, blueDraw = 0, greenDraw = 0;
 
@@ -37,6 +38,8 @@ void drawGasket(void)
         int j = rand() % 3;
         points[i] = (points[i-1] + vertices[j]) / 2.0;
     }
+
+    numDrawnPoints = numGasketPoints;
 
     // And for display...
     GLuint vert[1];
@@ -67,6 +70,82 @@ void drawGasket(void)
 }
 
 /**
+ * Draw a mandelbrot fractal.
+ * http://en.wikipedia.org/wiki/Mandelbrot_set
+ * http://warp.povusers.org/Mandelbrot/
+ */
+void drawMandelbrot(void)
+{
+    vec2 points[numGasketPoints];
+
+    // The acceptable ranges for the fractal. real in (-2,1), imaginary in (-1.2, 1.8)
+    float min_real = -2.0;
+    float max_real = 1.0;
+    float min_imag = -1.2;
+    float max_imag = min_imag + (max_real - min_real);
+
+    // Scaling factors, so we stay in our ranges
+    float real_factor = (max_real-min_real)/(windowWidth-1);
+    float imag_factor = (max_imag-min_imag)/(windowHeight-1);
+
+    // Some clerical stuff
+    unsigned max_iter = 30;
+    int pixel_count = 0;
+
+    for(float y=0; y<windowHeight; ++y)
+    {
+        float c_imag = max_imag - y*imag_factor;
+        for(float x=0; x<windowWidth; ++x)
+        {
+            float c_real = min_real + x*real_factor;
+
+            float z_real = c_real, z_imag = c_imag;
+            bool should_draw = true;
+            for(unsigned n=0; n<max_iter; ++n)
+            {
+                float z_real2 = z_real*z_real, z_imag2 = z_imag*z_imag;
+                if(z_real2 + z_imag2 > 4)
+                {
+                    should_draw = false;
+                    break;
+                }
+                z_imag = 2*z_real*z_imag + c_imag;
+                z_real = z_real2 - z_imag2 + c_real;
+            }
+            if(should_draw) { points[pixel_count++] = vec2(((2 * x) / windowHeight - 1) , ((2 * y) / windowHeight - 1)); }
+        }
+    }
+
+    numDrawnPoints = pixel_count;
+
+    // And for display...
+    GLuint vert[1];
+    glGenVertexArrays(1, vert);
+    glBindVertexArray(vert[0]);
+
+    // Setup the buffer
+    GLuint buffer;
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+
+    // Shaders
+    GLuint program = InitShader("vshader.glsl", "fshader.glsl");
+    glUseProgram(program);
+
+    GLint colorUniform = glGetUniformLocation(program, "colorUniform");
+    glUniform3f(colorUniform, redDraw, greenDraw, blueDraw);
+
+    // Init the vertex positions for the shader
+    GLuint pos = glGetAttribLocation(program, "vPosition");
+    glEnableVertexAttribArray(pos);
+    glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+    // And set the clear color
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+}
+
+/**
  * display
  *
  * Make the screen magic happen.
@@ -74,7 +153,7 @@ void drawGasket(void)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_POINTS, 0, numGasketPoints);
+    glDrawArrays(GL_POINTS, 0, numDrawnPoints);
     glFlush();
 }
 
@@ -145,7 +224,7 @@ int main(int argc, char **argv)
     glewExperimental = GL_TRUE;
     glewInit();
 
-    drawGasket(); // Make sure everything we need is sent to the proper place
+    drawMandelbrot(); // Make sure everything we need is sent to the proper place
 
     // Display stuff and event handlers
     glutDisplayFunc(display);
