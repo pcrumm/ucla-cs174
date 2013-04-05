@@ -21,6 +21,7 @@ GLint windowWidth, windowHeight, windowXPos, windowYPos;
 const int numGasketPoints = 50000;
 int numDrawnPoints;
 int mainWindow;
+bool draw_mandelbrot = false; // If this is false, we draw the SG.
 GLint redDraw = 1, blueDraw = 0, greenDraw = 0;
 
 void drawGasket(void)
@@ -158,6 +159,22 @@ void display(void)
 }
 
 /**
+ * draw_proper_fractal
+ * Draws the correct fractal based on the value of draw_mandelbrot.
+ */
+void drawProperFractal(void)
+{
+    if (draw_mandelbrot)
+    {
+        drawMandelbrot();
+    }
+    else
+    {
+        drawGasket();
+    }
+}
+
+/**
  * keyPress
  * Handler of keyPress events. We don"t do too many here so it"s a bit of a ghetto.
  */
@@ -185,12 +202,20 @@ void keyPress(unsigned char key, int x, int y)
             greenDraw = redDraw = 0.0;
             break;
 
+        // Switch fractals
+            case 'm': // Draw the mandelbrot
+                draw_mandelbrot = true;
+                break;
+            case 's':
+                draw_mandelbrot = false;
+                break;
+
         // Otherwise, do nothing
         default:
             return;
     }
 
-    drawGasket();
+    drawProperFractal();
     glutSetWindow(mainWindow);
     glutPostRedisplay();
 }
@@ -224,7 +249,8 @@ int main(int argc, char **argv)
     glewExperimental = GL_TRUE;
     glewInit();
 
-    drawMandelbrot(); // Make sure everything we need is sent to the proper place
+    // Draw the correct fractal, based on our options
+    drawProperFractal();
 
     // Display stuff and event handlers
     glutDisplayFunc(display);
