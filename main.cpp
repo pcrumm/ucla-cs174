@@ -93,19 +93,19 @@ void drawMandelbrot(void)
     unsigned max_iter = 30;
     int pixel_count = 0;
 
-    for(float y=0; y<windowHeight; ++y)
+    for (float y=0; y<windowHeight; ++y)
     {
         float c_imag = max_imag - y*imag_factor;
-        for(float x=0; x<windowWidth; ++x)
+        for (float x=0; x<windowWidth; ++x)
         {
             float c_real = min_real + x*real_factor;
 
             float z_real = c_real, z_imag = c_imag;
             bool should_draw = true;
-            for(unsigned n=0; n<max_iter; ++n)
+            for (unsigned n=0; n<max_iter; ++n)
             {
                 float z_real2 = z_real*z_real, z_imag2 = z_imag*z_imag;
-                if(z_real2 + z_imag2 > 4)
+                if (z_real2 + z_imag2 > 4)
                 {
                     should_draw = false;
                     break;
@@ -113,7 +113,11 @@ void drawMandelbrot(void)
                 z_imag = 2*z_real*z_imag + c_imag;
                 z_real = z_real2 - z_imag2 + c_real;
             }
-            if(should_draw) { points[pixel_count++] = vec2(((2 * x) / windowHeight - 1) , ((2 * y) / windowHeight - 1)); }
+            if (should_draw)
+            {
+                // We need to normalize all pixels to be between 1 and -1.
+                points[pixel_count++] = vec2(((2 * x) / windowHeight - 1) , ((2 * y) / windowHeight - 1));
+            }
         }
     }
 
