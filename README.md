@@ -20,3 +20,6 @@ b - blue
 In addition to the Sierpinksi Gasket (SG), you can also draw the Mandelbrot fractal.
 
 To switch to the Mandelbrot fractal, press m. To return to the SG, press s. You can also change the color of the Mandelbrot fractal.
+
+### Running
+This project is built and tested in OS/X 10.8 using the included OpenGL and GLUT/GLEW from Macports. It should build on Linux platforms as well, but you might need to modify the header file names depending on your system organization.
