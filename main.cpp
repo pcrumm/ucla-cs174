@@ -19,6 +19,8 @@
  */
 GLint windowWidth, windowHeight, windowXPos, windowYPos;
 const int numGasketPoints = 5000;
+int mainWindow;
+GLint redDraw = 1, blueDraw = 0, greenDraw = 0;
 
 void drawGasket(void)
 {
@@ -50,6 +52,9 @@ void drawGasket(void)
     // Shaders
     GLuint program = InitShader("vshader.glsl", "fshader.glsl");
     glUseProgram(program);
+
+    GLint colorUniform = glGetUniformLocation(program, "colorUniform");
+    glUniform3f(colorUniform, redDraw, greenDraw, blueDraw);
 
     // Init the vertex positions for the shader
     GLuint pos = glGetAttribLocation(program, "vPosition");
@@ -85,11 +90,30 @@ void keyPress(unsigned char key, int x, int y)
         case 'q':
         case 'Q':
             exit(0);
+            break;
+
+        // Color selection
+        case 'r':
+            redDraw = 1.0;
+            greenDraw = blueDraw = 0.0;
+            break;
+        case 'g':
+            greenDraw = 1.0;
+            redDraw = blueDraw = 0.0;
+            break;
+        case 'b':
+            blueDraw = 1.0;
+            greenDraw = redDraw = 0.0;
+            break;
 
         // Otherwise, do nothing
         default:
             return;
     }
+
+    drawGasket();
+    glutSetWindow(mainWindow);
+    glutPostRedisplay();
 }
 
 /**
@@ -114,7 +138,7 @@ int main(int argc, char **argv)
     windowWidth = windowHeight = 500;
     glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(windowXPos, windowYPos);
-    glutCreateWindow("CS174 - Assignment 1");
+    mainWindow = glutCreateWindow("CS174 - Assignment 1");
 
 
     // This will prevent an access violation on glGenVertexArrays

@@ -4,4 +4,14 @@
 
 ### Implemented Features
 #### Simple Display of GLUT-based window
-Allows quitting through press of "Q" or "q".
+Allows quitting through press of "Q" or "q". A simple gasket is drawn.
+
+### Extra Credit
+#### Application Variables for Color Setting
+Changing the redDraw, blueDraw, or greenDraw global variables will change the displayed colors.
+
+#### Key-Press to Change Colors
+Press the following keys for different colors:
+r - red
+g - green
+b - blue
