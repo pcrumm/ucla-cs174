@@ -22,6 +22,7 @@ const int numGasketPoints = 50000;
 int numDrawnPoints;
 int mainWindow;
 bool draw_mandelbrot = false; // If this is false, we draw the SG.
+bool rotate = false;
 GLint redDraw = 1, blueDraw = 0, greenDraw = 0;
 
 void drawGasket(void)
@@ -54,11 +55,18 @@ void drawGasket(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
 
     // Shaders
-    GLuint program = InitShader("vshader.glsl", "fshader.glsl");
+    GLuint program;
+    if (!rotate)
+        program = InitShader("vshader.glsl", "fshader.glsl");
+
+    else
+        program = InitShader("vshader_rotate.glsl", "fshader.glsl");
+
     glUseProgram(program);
 
     GLint colorUniform = glGetUniformLocation(program, "colorUniform");
     glUniform3f(colorUniform, redDraw, greenDraw, blueDraw);
+
 
     // Init the vertex positions for the shader
     GLuint pos = glGetAttribLocation(program, "vPosition");
@@ -135,7 +143,13 @@ void drawMandelbrot(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
 
     // Shaders
-    GLuint program = InitShader("vshader.glsl", "fshader.glsl");
+    GLuint program;
+    if (!rotate)
+        program = InitShader("vshader.glsl", "fshader.glsl");
+
+    else
+        program = InitShader("vshader_rotate.glsl", "fshader.glsl");
+
     glUseProgram(program);
 
     GLint colorUniform = glGetUniformLocation(program, "colorUniform");
@@ -213,6 +227,11 @@ void keyPress(unsigned char key, int x, int y)
             case 's':
                 draw_mandelbrot = false;
                 break;
+
+        // Rotate
+        case 't':
+            rotate = !rotate;
+            break;
 
         // Otherwise, do nothing
         default:
