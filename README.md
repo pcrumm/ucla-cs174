@@ -1,6 +1,6 @@
 # UCLA CS174
 ## Computer Graphics
-### Assignment #3 - April 22, 2013
+### Assignment #3 - May 7, 2013
 
 ### Implemented Features
 # Enable Window Closing
