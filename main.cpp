@@ -28,7 +28,7 @@ void add_planets()
 
     Planet ice_queen; // my ex lives here
     ice_queen.generate(4);
-    ice_queen.set_position(1, 1, 300);
+    ice_queen.set_position(1, 1, 200);
     ice_queen.set_scale(15);
     ice_queen.set_orbit_speed(1.5);
 
@@ -36,7 +36,7 @@ void add_planets()
 
     Planet swamp;
     swamp.generate(4);
-    swamp.set_position(1, 1, 380);
+    swamp.set_position(1, 1, 320);
     swamp.set_scale(9);
     swamp.set_orbit_speed(-.5);
 
@@ -52,7 +52,7 @@ void add_planets()
 
     Planet mud;
     mud.generate(6);
-    mud.set_position(1, 1, 420);
+    mud.set_position(1, 1, 480);
     mud.set_scale(12);
     mud.set_orbit_speed(1.0);
 
@@ -88,7 +88,7 @@ init()
     glUseProgram( program );
 
     // Initialize shader lighting parameters
-    point4 light_position( 1.0, 1.0, 51.0, 0.0 );
+    point4 light_position( 0.0, 0.0, -1.0, 0.0 );
     color4 light_ambient( 0.2, 0.2, 0.2, 1.0 );
     color4 light_diffuse( 1.0, 1.0, 1.0, 1.0 );
     color4 light_specular( 1.0, 1.0, 1.0, 1.0 );
