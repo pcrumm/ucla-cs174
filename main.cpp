@@ -30,7 +30,7 @@ void add_planets()
     ice_queen.generate(4);
     ice_queen.set_position(1, 1, 300);
     ice_queen.set_scale(15);
-    ice_queen.set_orbit_speed(3);
+    ice_queen.set_orbit_speed(1.5);
 
     ss.add_planet(ice_queen);
 
@@ -38,7 +38,7 @@ void add_planets()
     swamp.generate(4);
     swamp.set_position(1, 1, 380);
     swamp.set_scale(9);
-    swamp.set_orbit_speed(-1);
+    swamp.set_orbit_speed(-.5);
 
     ss.add_planet(swamp);
 
@@ -46,7 +46,7 @@ void add_planets()
     water.generate(7);
     water.set_position(1, 1, 400);
     water.set_scale(4);
-    water.set_orbit_speed(1);
+    water.set_orbit_speed(.7);
 
     ss.add_planet(water);
 
@@ -54,7 +54,7 @@ void add_planets()
     mud.generate(6);
     mud.set_position(1, 1, 420);
     mud.set_scale(12);
-    mud.set_orbit_speed(2);
+    mud.set_orbit_speed(1.0);
 
     ss.add_planet(mud);
 }

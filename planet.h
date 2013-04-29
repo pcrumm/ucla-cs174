@@ -14,8 +14,8 @@ public:
   int NumVertices;
   int scale;
   bool is_sun;
-  int orbit_angle;
-  int orbit_speed;
+  float orbit_angle;
+  float orbit_speed;
 
   Planet()
   {
@@ -163,7 +163,7 @@ public:
     orbit_angle += this->orbit_speed;
   }
 
-  void set_orbit_speed(int s)
+  void set_orbit_speed(float s)
   {
     this->orbit_speed = s;
   }
