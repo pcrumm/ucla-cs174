@@ -8,6 +8,8 @@ uniform mat4 ModelView;
 uniform vec4 LightPosition;
 uniform float Shininess;
 
+uniform float isSun;
+
 void main() 
 { 
     // Normalize the input lighting vectors
@@ -32,4 +34,10 @@ void main()
 
     gl_FragColor = ambient + diffuse + specular;
     gl_FragColor.a = 1.0;
+
+    // If it's the sun, undo all of this magic and just paint it red
+    if (isSun > 0.5)
+    {
+      gl_FragColor = vec4(.93, .71, .22, 1.0);
+    }
 } 

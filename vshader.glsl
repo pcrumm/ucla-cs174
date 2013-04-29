@@ -10,6 +10,7 @@ uniform mat4 ModelView;
 uniform vec4 LightPosition;
 uniform mat4 Projection;
 uniform mat4 Translate;
+uniform mat4 ModelTransform;
 
 void main()
 {
@@ -21,5 +22,5 @@ void main()
   fL = LightPosition.xyz - vPosition.xyz;
     }
 
-    gl_Position = Projection*ModelView*Translate*vPosition;
+    gl_Position = Projection*ModelView*Translate*ModelTransform*vPosition;
 }

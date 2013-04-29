@@ -119,7 +119,7 @@ public:
 
   mat4 getPMatrix()
   {
-    return Perspective (this->fov, this->window_width / this->window_height, .1, 100);
+    return Perspective (this->fov, this->window_width / this->window_height, .1, 1000);
   }
 
   mat4 getMVMatrix()
