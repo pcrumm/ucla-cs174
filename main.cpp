@@ -18,7 +18,7 @@ GLuint  ModelView, Projection, Translation, program, ModelTransform;
 
 void add_planets()
 {
-    Planet sun;
+    Planet sun (color4 (0, 0, 0, 1), color4 (0, 0, 0, 1), color4 (0, 0, 0, 1));
     sun.generate(7);
     sun.set_position(1, 1, 0);
     sun.set_scale(50);
@@ -26,7 +26,7 @@ void add_planets()
 
     ss.add_planet(sun);
 
-    Planet ice_queen; // my ex lives here
+    Planet ice_queen (color4 (.113, .113, .113, 1.0), color4 (.925, .98, .984, 1.0), color4 (.925, .98, .984, 1.0)); // my ex lives here
     ice_queen.generate(4);
     ice_queen.set_position(1, 1, 200);
     ice_queen.set_scale(15);
@@ -34,7 +34,7 @@ void add_planets()
 
     ss.add_planet(ice_queen);
 
-    Planet swamp;
+    Planet swamp ( color4 (.24, .24, .24, 1), color4 (.46, .60, .41, 1), color4 (.46, .60, .41, 1));
     swamp.generate(4);
     swamp.set_position(1, 1, 320);
     swamp.set_scale(9);
@@ -42,15 +42,16 @@ void add_planets()
 
     ss.add_planet(swamp);
 
-    Planet water;
+    Planet water ( color4 (.043, .21, .26, 1), color4 (.39, .77, .90, 1), color4 (.39, .77, .90, 1));
     water.generate(7);
     water.set_position(1, 1, 400);
     water.set_scale(4);
     water.set_orbit_speed(.7);
+    water.shininess = 1.0;
 
     ss.add_planet(water);
 
-    Planet mud;
+    Planet mud ( color4(.15, .15, .15), color4 (.64, .37, .062), color4 (.64, .37, .062));
     mud.generate(6);
     mud.set_position(1, 1, 480);
     mud.set_scale(12);
@@ -75,46 +76,12 @@ init()
     glGenBuffers( 1, &buffer );
     glBindBuffer( GL_ARRAY_BUFFER, buffer );
 
-    /* glBufferData( GL_ARRAY_BUFFER, p.num_points() + p.num_normals(),
-          NULL, GL_STATIC_DRAW );
-    glBufferSubData( GL_ARRAY_BUFFER, 0, p.num_points(), p.get_points() );
-    glBufferSubData( GL_ARRAY_BUFFER, p.num_points(),
-             p.num_normals(), p.get_normals() ); */
-
     ss.add_planets_to_buffer();
 
     // Load shaders and use the resulting shader program
     program = InitShader( "vshader.glsl", "fshader.glsl" );
     glUseProgram( program );
 
-    // Initialize shader lighting parameters
-    point4 light_position( 0.0, 0.0, -1.0, 0.0 );
-    color4 light_ambient( 0.2, 0.2, 0.2, 1.0 );
-    color4 light_diffuse( 1.0, 1.0, 1.0, 1.0 );
-    color4 light_specular( 1.0, 1.0, 1.0, 1.0 );
-
-    color4 material_ambient( 1.0, 0.0, 1.0, 1.0 );
-    color4 material_diffuse( 1.0, 0.8, 0.0, 1.0 );
-    color4 material_specular( 1.0, 0.0, 1.0, 1.0 );
-    float  material_shininess = 5.0;
-
-    color4 ambient_product = light_ambient * material_ambient;
-    color4 diffuse_product = light_diffuse * material_diffuse;
-    color4 specular_product = light_specular * material_specular;
-
-    glUniform4fv( glGetUniformLocation(program, "AmbientProduct"),
-          1, ambient_product );
-    glUniform4fv( glGetUniformLocation(program, "DiffuseProduct"),
-          1, diffuse_product );
-    glUniform4fv( glGetUniformLocation(program, "SpecularProduct"),
-          1, specular_product );
-    
-    glUniform4fv( glGetUniformLocation(program, "LightPosition"),
-          1, light_position );
-
-    glUniform1f( glGetUniformLocation(program, "Shininess"),
-         material_shininess );
-         
     // Retrieve transformation uniform variable locations
     ModelView = glGetUniformLocation( program, "ModelView" );
     Projection = glGetUniformLocation( program, "Projection" );

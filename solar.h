@@ -59,6 +59,12 @@ public:
     GLuint vNormal = glGetAttribLocation( program, "vNormal" ); 
     glEnableVertexAttribArray( vNormal );
 
+    // Initialize shader lighting parameters
+    point4 light_position( 0.0, 0.0, -1.0, 0.0 );
+    color4 light_ambient( 0.2, 0.2, 0.2, 1.0 );
+    color4 light_diffuse( 1.0, 1.0, 1.0, 1.0 );
+    color4 light_specular( 1.0, 1.0, 1.0, 1.0 );
+
     int offset = 0;
     for (int i = 0; i != planets.size(); i++)
     {
@@ -77,6 +83,24 @@ public:
       glUniformMatrix4fv( ModelTransform, 1, GL_TRUE, p.get_translation() );
 
       glUniform1f (glGetUniformLocation (program, "isSun"), (p.is_sun ? 1.0 : 0.0));
+ 
+      // Lighting stuff
+      color4 ambient_product = light_ambient * p.ambient;
+      color4 diffuse_product = light_diffuse * p.diffuse;
+      color4 specular_product = light_specular * p.specular;
+
+      glUniform4fv( glGetUniformLocation(program, "AmbientProduct"),
+            1, ambient_product );
+      glUniform4fv( glGetUniformLocation(program, "DiffuseProduct"),
+            1, diffuse_product );
+      glUniform4fv( glGetUniformLocation(program, "SpecularProduct"),
+            1, specular_product );
+      
+      glUniform4fv( glGetUniformLocation(program, "LightPosition"),
+            1, light_position );
+
+      glUniform1f( glGetUniformLocation(program, "Shininess"),
+           p.shininess );
 
       glDrawArrays (GL_TRIANGLES, 0, p.NumVertices);
     }

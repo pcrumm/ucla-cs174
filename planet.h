@@ -17,7 +17,13 @@ public:
   float orbit_angle;
   float orbit_speed;
 
-  Planet()
+  // Attributes used for shading
+  color4 ambient;
+  color4 diffuse;
+  color4 specular;
+  float shininess;
+
+  Planet(color4 ambient, color4 diffuse, color4 specular)
   {
     Index = 0;
     pos_x = 0;
@@ -27,6 +33,11 @@ public:
     is_sun = false;
     orbit_angle = 0;
     orbit_speed = 0;
+
+    this->ambient = ambient;
+    this->diffuse = diffuse;
+    this->specular = specular;
+    shininess = 0.5;
   }
 
   /***
@@ -174,5 +185,5 @@ private:
 
   point4 *points;
   vec3 *normals;
-} p;
+};
 #endif
