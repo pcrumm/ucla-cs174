@@ -21,6 +21,9 @@ class Camera
   // at 0 degrees.
   int rotation;
 
+  // Camera up and down rotation (altitude). Positive is up.
+  int altitude;
+
   // Set the camera's FOV, in degrees.
   int fov;
 
@@ -39,6 +42,7 @@ public:
 
     fov = 100;
     rotation = 0;
+    altitude = 0;
   }
 
   float deg_to_rad(int angle)
@@ -67,12 +71,20 @@ public:
   {
     this->z_pos -= distance*cos(this->deg_to_rad(this->rotation));
     this->x_pos -= distance*sin(this->deg_to_rad(this->rotation));
+    this->y_pos += distance*sin(this->deg_to_rad(this->altitude));
   }
 
-  // We rotate in degrees; we define left to be a positive angle increase.
-  void rotateCamera (int rotation)
+  // This moves the camera left and right. We rotate in degrees;
+  // we define left to be a positive angle increase.
+  void rotateCameraLR (int rotation)
   {
     this->rotation += rotation;
+  }
+
+  // This will rotate the camera up and down. 
+  void rotateCameraUD (int rotation)
+  {
+    this->altitude += rotation;
   }
 
   void changeFOV (int delta)
@@ -149,6 +161,6 @@ private:
   // Rotates the world based on the camera's position.
   mat4 buildRotationMatrix()
   {
-    return Translate(0, 0, 2)*RotateY (-this->rotation)*Translate(0, 0, -2);
+    return RotateX (-this->altitude)*Translate(0, 0, 500)*RotateY (-this->rotation)*Translate(0, 0, -500);
   }
 } camera;

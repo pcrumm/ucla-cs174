@@ -8,7 +8,7 @@
 typedef Angel::vec4 point4;
 typedef Angel::vec4 color4;
 
-int dr = 10;
+int dr = 3;
 int window_width, window_height;
 
 // Model-view and projection matrices uniform location
@@ -26,7 +26,8 @@ void add_planets()
 
     ss.add_planet(sun);
 
-    Planet ice_queen (color4 (.113, .113, .113, 1.0), color4 (.925, .98, .984, 1.0), color4 (.925, .98, .984, 1.0)); // my ex lives here
+    // my ex lives here
+    Planet ice_queen (color4 (.113, .113, .113, 1.0), color4 (.925, .98, .984, 1.0), color4 (.925, .98, .984, 1.0));
     ice_queen.generate(4, SHADE_DEFAULT);
     ice_queen.set_position(1, 1, 200);
     ice_queen.set_scale(15);
@@ -128,6 +129,10 @@ keyboard( unsigned char key, int x, int y )
     case 'n': camera.changeFOV(-5); break;
     case 'w': camera.changeFOV(5); break;
 
+    // camera up and down rotation
+    case 'e': camera.rotateCameraUD(5); break;
+    case 'd': camera.rotateCameraUD(-5); break;
+
     case ' ':  // reset values to their defaults
         camera.reset();
         break;
@@ -140,8 +145,8 @@ void specialKeys (int key, int x, int y)
 {
     switch (key)
     {
-        case GLUT_KEY_LEFT: camera.rotateCamera(dr); break;
-        case GLUT_KEY_RIGHT: camera.rotateCamera(-dr); break;
+        case GLUT_KEY_LEFT: camera.rotateCameraLR(dr); break;
+        case GLUT_KEY_RIGHT: camera.rotateCameraLR(-dr); break;
         case GLUT_KEY_UP: camera.moveOnYAxis(5); break;
         case GLUT_KEY_DOWN: camera.moveOnYAxis(-5); break;
     }
