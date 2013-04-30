@@ -27,7 +27,7 @@ void add_planets()
     ss.add_planet(sun);
 
     // my ex lives here
-    Planet ice_queen (color4 (.113, .113, .113, 1.0), color4 (.925, .98, .984, 1.0), color4 (.925, .98, .984, 1.0));
+    Planet ice_queen (color4 (.63, .63, .63, 1.0), color4 (.925, .98, .984, 1.0), color4 (.925, .98, .984, 1.0));
     ice_queen.generate(4, SHADE_DEFAULT);
     ice_queen.set_position(1, 1, 200);
     ice_queen.set_scale(15);
@@ -43,7 +43,7 @@ void add_planets()
 
     ss.add_planet(swamp);
 
-    Planet water ( color4 (.05, .05, .33, 1), color4 (.39, .77, .90, 1), color4 (.39, .77, .90, 1));
+    Planet water ( color4 (.19, .5, .7, 1), color4 (.39, .77, .90, 1), color4 (.39, .77, .90, 1));
     water.generate(7, SHADE_PHONG);
     water.set_position(1, 1, 400);
     water.set_scale(4);
@@ -52,7 +52,7 @@ void add_planets()
 
     ss.add_planet(water);
 
-    Planet mud ( color4(.15, .15, .15, 1), color4 (.64, .37, .062, 1), color4 (0, 0, 0, 1));
+    Planet mud ( color4(.4, .15, 0, 1), color4 (.64, .37, .062, 1), color4 (0, 0, 0, 1));
     mud.generate(6, SHADE_DEFAULT);
     mud.set_position(1, 1, 480);
     mud.set_scale(12);
@@ -200,7 +200,7 @@ main( int argc, char **argv )
     glutReshapeFunc( reshape );
     glutKeyboardFunc( keyboard );
     glutSpecialFunc (specialKeys);
-    glutIdleFunc (idle);
+    // glutIdleFunc (idle);
 
     glutMainLoop();
     return 0;

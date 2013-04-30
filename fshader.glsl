@@ -38,6 +38,6 @@ void main()
     // If it's the sun, undo all of this magic and just paint it red
     if (isSun > 0.5)
     {
-      gl_FragColor = vec4(.93, .71, .22, 1.0);
+      gl_FragColor = vec4(1, .839, .148, 1.0);
     }
 } 
