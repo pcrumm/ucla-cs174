@@ -191,7 +191,7 @@ main( int argc, char **argv )
 
     glutCreateWindow( "Assignment 3" );
 
-    camera.setDefaultPos (0, 0, 500);
+    camera.setDefaultPos (0, 70, 600);
 
     glewInit();
     init();
@@ -200,7 +200,7 @@ main( int argc, char **argv )
     glutReshapeFunc( reshape );
     glutKeyboardFunc( keyboard );
     glutSpecialFunc (specialKeys);
-    //glutIdleFunc (idle);
+    glutIdleFunc (idle);
 
     glutMainLoop();
     return 0;

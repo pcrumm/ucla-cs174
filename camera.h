@@ -32,17 +32,9 @@ class Camera
 public:
   Camera ()
   {
-    // We default to the origin for our coordinate system
-    x_pos = 0;
-    y_pos = 0;
-    z_pos = 0;
-    default_x = 0;
-    default_y = 0;
-    default_z = 0;
-
     fov = 100;
     rotation = 0;
-    altitude = 0;
+    altitude = -30;
   }
 
   float deg_to_rad(int angle)
@@ -105,6 +97,7 @@ public:
     this->y_pos = this->default_y;
     this->z_pos = this->default_z;
 
+    this->altitude = -30;
     this->rotation = 0;
     this->fov = 100;
   }
