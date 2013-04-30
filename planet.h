@@ -3,9 +3,14 @@
 typedef Angel::vec4  color4;
 typedef Angel::vec4  point4;
 typedef Angel::vec2  point2;
+typedef int          shader;
 
 #ifndef PLANET_INC
 #define PLANET_INC 1
+
+#define SHADE_DEFAULT 1
+#define SHADE_GOURD 2
+#define SHADE_PHONG 3
 
 class Planet {
 public:
@@ -44,13 +49,38 @@ public:
    * Drawing functions
    */
   void
-  triangle( const point4& a, const point4& b, const point4& c )
+  triangle( const point4& a, const point4& b, const point4& c, shader s )
   {
-      vec3  normal = normalize( cross(b - a, c - b) );
+      if (s == SHADE_DEFAULT)
+      {
+        vec3 normal = normalize( cross(b - a, c - b) );
 
-      normals[Index] = normal;  points[Index] = a;  Index++;
-      normals[Index] = normal;  points[Index] = b;  Index++;
-      normals[Index] = normal;  points[Index] = c;  Index++;
+        normals[Index] = normal;
+        points[Index] = a;
+        Index++;
+
+        normals[Index] = normal;
+        points[Index] = b;
+        Index++;
+
+        normals[Index] = normal;
+        points[Index] = c;
+        Index++;
+      }
+      else // this is currently SHADE_GOURD. these need to be separated sometime
+      {
+        normals[Index] = vec3 (a.x, a.y, a.z);
+        points[Index] = a;
+        Index++;
+
+        normals[Index] = vec3 (b.x, b.y, b.z);
+        points[Index] = b;
+        Index++;
+
+        normals[Index] = vec3 (c.x, c.y, c.z);
+        points[Index] = c;
+        Index++;
+      }
   }
 
   point4
@@ -69,24 +99,24 @@ public:
 
   void
   divide_triangle( const point4& a, const point4& b,
-           const point4& c, int count )
+           const point4& c, int count, shader s )
   {
       if ( count > 0 ) {
           point4 v1 = unit( a + b );
           point4 v2 = unit( a + c );
           point4 v3 = unit( b + c );
-          divide_triangle(  a, v1, v2, count - 1 );
-          divide_triangle(  c, v2, v3, count - 1 );
-          divide_triangle(  b, v3, v1, count - 1 );
-          divide_triangle( v1, v3, v2, count - 1 );
+          divide_triangle(  a, v1, v2, count - 1, s );
+          divide_triangle(  c, v2, v3, count - 1, s );
+          divide_triangle(  b, v3, v1, count - 1, s );
+          divide_triangle( v1, v3, v2, count - 1, s );
       }
       else {
-          triangle( a, b, c );
+          triangle( a, b, c, s );
       }
   }
 
   void
-  tetrahedron( int count )
+  tetrahedron( int count, shader s )
   {
       point4 v[4] = {
       vec4( 0.0, 0.0, 1.0, 1.0 ),
@@ -95,14 +125,14 @@ public:
       vec4( 0.816497, -0.471405, -0.333333, 1.0 )
       };
 
-      divide_triangle( v[0], v[1], v[2], count );
-      divide_triangle( v[3], v[2], v[1], count );
-      divide_triangle( v[0], v[3], v[1], count );
-      divide_triangle( v[0], v[2], v[3], count );
+      divide_triangle( v[0], v[1], v[2], count, s );
+      divide_triangle( v[3], v[2], v[1], count, s );
+      divide_triangle( v[0], v[3], v[1], count, s );
+      divide_triangle( v[0], v[2], v[3], count, s );
   }
 
   void
-  generate(int num_subdivisions)
+  generate(int num_subdivisions, shader s)
   {
     this->NumTimesToSubdivide = num_subdivisions;
     this->NumTriangles = pow(4, num_subdivisions + 1);
@@ -111,7 +141,7 @@ public:
     points = new point4[NumVertices];
     normals = new vec3[NumVertices];
 
-    tetrahedron (this->NumTimesToSubdivide);
+    tetrahedron (this->NumTimesToSubdivide, s);
   }
 
   /**

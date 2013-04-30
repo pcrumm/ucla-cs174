@@ -19,7 +19,7 @@ GLuint  ModelView, Projection, Translation, program, ModelTransform;
 void add_planets()
 {
     Planet sun (color4 (0, 0, 0, 1), color4 (0, 0, 0, 1), color4 (0, 0, 0, 1));
-    sun.generate(7);
+    sun.generate(7, SHADE_DEFAULT);
     sun.set_position(1, 1, 0);
     sun.set_scale(50);
     sun.make_sun();
@@ -27,7 +27,7 @@ void add_planets()
     ss.add_planet(sun);
 
     Planet ice_queen (color4 (.113, .113, .113, 1.0), color4 (.925, .98, .984, 1.0), color4 (.925, .98, .984, 1.0)); // my ex lives here
-    ice_queen.generate(4);
+    ice_queen.generate(4, SHADE_DEFAULT);
     ice_queen.set_position(1, 1, 200);
     ice_queen.set_scale(15);
     ice_queen.set_orbit_speed(1.5);
@@ -35,7 +35,7 @@ void add_planets()
     ss.add_planet(ice_queen);
 
     Planet swamp ( color4 (.24, .24, .24, 1), color4 (.46, .60, .41, 1), color4 (.46, .60, .41, 1));
-    swamp.generate(4);
+    swamp.generate(4, SHADE_GOURD);
     swamp.set_position(1, 1, 320);
     swamp.set_scale(9);
     swamp.set_orbit_speed(-.5);
@@ -43,7 +43,7 @@ void add_planets()
     ss.add_planet(swamp);
 
     Planet water ( color4 (.043, .21, .26, 1), color4 (.39, .77, .90, 1), color4 (.39, .77, .90, 1));
-    water.generate(7);
+    water.generate(7, SHADE_PHONG);
     water.set_position(1, 1, 400);
     water.set_scale(4);
     water.set_orbit_speed(.7);
@@ -51,8 +51,8 @@ void add_planets()
 
     ss.add_planet(water);
 
-    Planet mud ( color4(.15, .15, .15), color4 (.64, .37, .062), color4 (.64, .37, .062));
-    mud.generate(6);
+    Planet mud ( color4(.15, .15, .15, 1), color4 (.64, .37, .062, 1), color4 (0, 0, 0, 1));
+    mud.generate(6, SHADE_DEFAULT);
     mud.set_position(1, 1, 480);
     mud.set_scale(12);
     mud.set_orbit_speed(1.0);
@@ -195,7 +195,7 @@ main( int argc, char **argv )
     glutReshapeFunc( reshape );
     glutKeyboardFunc( keyboard );
     glutSpecialFunc (specialKeys);
-    glutIdleFunc (idle);
+    //glutIdleFunc (idle);
 
     glutMainLoop();
     return 0;
