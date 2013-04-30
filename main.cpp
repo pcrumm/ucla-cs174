@@ -43,7 +43,7 @@ void add_planets()
 
     ss.add_planet(swamp);
 
-    Planet water ( color4 (.043, .21, .26, 1), color4 (.39, .77, .90, 1), color4 (.39, .77, .90, 1));
+    Planet water ( color4 (.05, .05, .33, 1), color4 (.39, .77, .90, 1), color4 (.39, .77, .90, 1));
     water.generate(7, SHADE_PHONG);
     water.set_position(1, 1, 400);
     water.set_scale(4);
