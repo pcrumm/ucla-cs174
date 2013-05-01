@@ -1,3 +1,4 @@
+#pragma once
 #include "Angel.h"
 #include "planet.h"
 #include <vector>
@@ -18,9 +19,9 @@ public:
   }
 
   void
-  add_planet(Planet p)
+  add_planet(Planet *p)
   {
-    planets.insert (planets.end(), p);
+    planets.push_back (p);
   }
 
   void add_planets_to_buffer()
@@ -32,7 +33,7 @@ public:
 
     for (int i = 0; i != planets.size(); i++)
     {
-      buf_size += planets[i].num_points() + planets[i].num_normals();
+      buf_size += planets[i]->num_points() + planets[i]->num_normals();
     }
 
     // Setup the buffer
@@ -41,13 +42,13 @@ public:
 
     for (int i = 0; i != planets.size(); i++)
     {
-      Planet p = planets[i];
-      glBufferSubData( GL_ARRAY_BUFFER, offset, p.num_points(), p.get_points() );
-      offset += p.num_points();
+      Planet *p = planets[i];
+      glBufferSubData( GL_ARRAY_BUFFER, offset, p->num_points(), p->get_points() );
+      offset += p->num_points();
       glBufferSubData( GL_ARRAY_BUFFER, offset,
-               p.num_normals(), p.get_normals() );
+               p->num_normals(), p->get_normals() );
 
-      offset += p.num_normals();
+      offset += p->num_normals();
     }
   }
 
@@ -60,7 +61,7 @@ public:
     glEnableVertexAttribArray( vNormal );
 
     // Initialize shader lighting parameters
-    point4 light_position( 0.0, 0.0, -5.0, 0.0 );
+    point4 light_position( 0.0, 0.0, -10.0, 0.0 );
     color4 light_ambient( 0.2, 0.2, 0.2, 1.0 );
     color4 light_diffuse( 1.0, 1.0, 1.0, 1.0 );
     color4 light_specular( 1.0, 1.0, 1.0, 1.0 );
@@ -68,26 +69,26 @@ public:
     int offset = 0;
     for (int i = 0; i != planets.size(); i++)
     {
-      Planet p = planets[i];
+      Planet *p = planets[i];
 
       glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0,
                  BUFFER_OFFSET(offset) );
 
-      offset += p.num_points();
+      offset += p->num_points();
 
       glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0,
                  BUFFER_OFFSET(offset) );
 
-      offset += p.num_normals();
+      offset += p->num_normals();
 
-      glUniformMatrix4fv( ModelTransform, 1, GL_TRUE, p.get_translation() );
+      glUniformMatrix4fv( ModelTransform, 1, GL_TRUE, p->get_translation() );
 
-      glUniform1f (glGetUniformLocation (program, "isSun"), (p.is_sun ? 1.0 : 0.0));
+      glUniform1f (glGetUniformLocation (program, "isSun"), (p->is_sun ? 1.0 : 0.0));
  
       // Lighting stuff
-      color4 ambient_product = light_ambient * p.ambient;
-      color4 diffuse_product = light_diffuse * p.diffuse;
-      color4 specular_product = light_specular * p.specular;
+      color4 ambient_product = light_ambient * p->ambient;
+      color4 diffuse_product = light_diffuse * p->diffuse;
+      color4 specular_product = light_specular * p->specular;
 
       glUniform4fv( glGetUniformLocation(program, "AmbientProduct"),
             1, ambient_product );
@@ -100,9 +101,9 @@ public:
             1, light_position );
 
       glUniform1f( glGetUniformLocation(program, "Shininess"),
-           p.shininess );
+           p->shininess );
 
-      glDrawArrays (GL_TRIANGLES, 0, p.NumVertices);
+      glDrawArrays (GL_TRIANGLES, 0, p->NumVertices);
     }
   }
 
@@ -110,12 +111,12 @@ public:
   {
     for (int i = 0; i != planets.size(); i++)
     {
-      if (planets[i].is_sun)
+      if (planets[i]->is_sun)
         continue;
 
-      planets[i].orbit();
+      planets[i]->orbit();
     }
   }
 private:
-  std::vector<Planet> planets;
+  std::vector<Planet*> planets;
 } ss;

@@ -22,6 +22,11 @@ d - Make camera look down
 The camera defaults to a thirty degree downward view on the entire solar system.
 The reset key returns this view.
 
+## Extra Credit
+# Moon
+The third planet (the water planet) has a small white moon that retrogrde
+orbits it.
+
 # Contact
 Problems running? Contact me. pcrumm@p3net.net
 UID: 804005575

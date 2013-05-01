@@ -1,3 +1,4 @@
+#pragma once
 #include "Angel.h"
 #define PI 3.14159
 

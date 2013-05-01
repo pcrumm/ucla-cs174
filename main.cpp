@@ -3,6 +3,7 @@
 #include "Angel.h"
 #include "camera.h"
 #include "planet.h"
+#include "moon.h"
 #include "solar.h"
 
 typedef Angel::vec4 point4;
@@ -18,45 +19,54 @@ GLuint  ModelView, Projection, Translation, program, ModelTransform;
 
 void add_planets()
 {
-    Planet sun (color4 (0, 0, 0, 1), color4 (0, 0, 0, 1), color4 (0, 0, 0, 1));
-    sun.generate(7, SHADE_DEFAULT);
-    sun.set_position(1, 1, 0);
-    sun.set_scale(50);
-    sun.make_sun();
+    Planet *sun = new Planet (color4 (0, 0, 0, 1), color4 (0, 0, 0, 1), color4 (0, 0, 0, 1));
+    sun->generate(7, SHADE_DEFAULT);
+    sun->set_position(1, 1, 0);
+    sun->set_scale(50);
+    sun->make_sun();
 
     ss.add_planet(sun);
 
     // my ex lives here
-    Planet ice_queen (color4 (.63, .63, .63, 1.0), color4 (.925, .98, .984, 1.0), color4 (.925, .98, .984, 1.0));
-    ice_queen.generate(4, SHADE_DEFAULT);
-    ice_queen.set_position(1, 1, 200);
-    ice_queen.set_scale(15);
-    ice_queen.set_orbit_speed(1.5);
+    Planet *ice_queen = new Planet (color4 (.925, .98, .984, 1.0), color4 (.925, .98, .984, 1.0), color4 (.925, .98, .984, 1.0));
+    ice_queen->generate(4, SHADE_DEFAULT);
+    ice_queen->set_position(1, 1, 200);
+    ice_queen->set_scale(15);
+    ice_queen->set_orbit_speed(1.5);
 
     ss.add_planet(ice_queen);
 
-    Planet swamp ( color4 (.24, .24, .24, 1), color4 (.46, .60, .41, 1), color4 (.46, .60, .41, 1));
-    swamp.generate(4, SHADE_GOURD);
-    swamp.set_position(1, 1, 320);
-    swamp.set_scale(9);
-    swamp.set_orbit_speed(-.5);
+    Planet *swamp = new Planet ( color4 (.46, .60, .41, 1), color4 (.46, .60, .41, 1), color4 (.46, .60, .41, 1));
+    swamp->generate(4, SHADE_GOURD);
+    swamp->set_position(1, 1, 320);
+    swamp->set_scale(9);
+    swamp->set_orbit_speed(-.5);
 
     ss.add_planet(swamp);
 
-    Planet water ( color4 (.19, .5, .7, 1), color4 (.39, .77, .90, 1), color4 (.39, .77, .90, 1));
-    water.generate(7, SHADE_PHONG);
-    water.set_position(1, 1, 400);
-    water.set_scale(4);
-    water.set_orbit_speed(.7);
-    water.shininess = 1.0;
+    Planet *water = new Planet ( color4 (.39, .77, .90, 1), color4 (.39, .77, .90, 1), color4 (.39, .77, .90, 1));
+    water->generate(7, SHADE_PHONG);
+    water->set_position(1, 1, 400);
+    water->set_scale(4);
+    water->set_orbit_speed(.7);
+    water->shininess = 1.0;
 
     ss.add_planet(water);
 
-    Planet mud ( color4(.4, .15, 0, 1), color4 (.64, .37, .062, 1), color4 (0, 0, 0, 1));
-    mud.generate(6, SHADE_DEFAULT);
-    mud.set_position(1, 1, 480);
-    mud.set_scale(12);
-    mud.set_orbit_speed(1.0);
+    // EC: The moon, which will orbit the water planet
+    Moon *m = new Moon (1, 1, 400);
+    m->generate(7, SHADE_GOURD);
+    m->set_scale(2);
+    m->set_orbit_speed(.7);
+    m->set_moon_speed(-4);
+
+    ss.add_planet(m);
+
+    Planet *mud = new Planet ( color4 (.64, .37, .062, 1), color4 (.64, .37, .062, 1), color4 (0, 0, 0, 1));
+    mud->generate(6, SHADE_DEFAULT);
+    mud->set_position(1, 1, 480);
+    mud->set_scale(12);
+    mud->set_orbit_speed(1.0);
 
     ss.add_planet(mud);
 }
@@ -180,8 +190,8 @@ int
 main( int argc, char **argv )
 {
 
-    window_width = 512;
-    window_height = 512;
+    window_width = 1024;
+    window_height = 1024;
 
     glutInit( &argc, argv );
     glutInitDisplayMode( GLUT_RGBA | GLUT_DEPTH );
@@ -200,7 +210,7 @@ main( int argc, char **argv )
     glutReshapeFunc( reshape );
     glutKeyboardFunc( keyboard );
     glutSpecialFunc (specialKeys);
-    // glutIdleFunc (idle);
+    glutIdleFunc (idle);
 
     glutMainLoop();
     return 0;
