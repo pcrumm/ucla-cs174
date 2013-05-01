@@ -9,11 +9,13 @@
 typedef Angel::vec4 point4;
 typedef Angel::vec4 color4;
 
-int dr = 3;
+int dr = 1;
 int window_width, window_height;
 
 // Model-view and projection matrices uniform location
 GLuint  ModelView, Projection, Translation, program, ModelTransform;
+
+bool bind_camera = false; // If set to true, we attach the camera to the mud
 
 //----------------------------------------------------------------------------
 
@@ -123,6 +125,12 @@ display( void )
 void
 keyboard( unsigned char key, int x, int y )
 {
+    if (bind_camera) // If the camera is bound, limit actions
+    {
+        if (key != 'b' && key != 'q' && key != ' ')
+            return;
+    }
+
     switch( key ) {
     case 033: // Escape Key
     case 'q': case 'Q':
@@ -143,7 +151,21 @@ keyboard( unsigned char key, int x, int y )
     case 'e': camera.rotateCameraUD(5); break;
     case 'd': camera.rotateCameraUD(-5); break;
 
+    // bind the camera to a planet
+    case 'b':
+        if (bind_camera)
+        {
+            bind_camera = false;
+            camera.reset();
+        }
+        else
+        {
+            bind_camera = true;
+        }
+        break;
+
     case ' ':  // reset values to their defaults
+        bind_camera = false;
         camera.reset();
         break;
     }
@@ -153,6 +175,12 @@ keyboard( unsigned char key, int x, int y )
 
 void specialKeys (int key, int x, int y)
 {
+    if (bind_camera) // Limit movement with a bound camera
+    {
+        if (key != GLUT_KEY_LEFT && key != GLUT_KEY_RIGHT)
+            return;
+    }
+
     switch (key)
     {
         case GLUT_KEY_LEFT: camera.rotateCameraLR(dr); break;
@@ -181,6 +209,14 @@ void
 idle()
 {
     ss.do_orbits();
+
+    // If we're binding the camera, we attach it here...
+    if (bind_camera)
+    {
+        vec4 planet_pos = ss.get_planet_position(5);
+        camera.setDefaultPos(planet_pos.x, planet_pos.y + 6, planet_pos.z+30);
+    }
+
     glutPostRedisplay();
 }
 

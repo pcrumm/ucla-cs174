@@ -27,6 +27,11 @@ The reset key returns this view.
 The third planet (the water planet) has a small white moon that retrogrde
 orbits it.
 
+# Camera Attachment
+Attach the camera to the brown planet on the press of b. You can press b or space
+to leave the mode, and use arrow keys to control movement. The camera looks at the
+planet and orbits with it, so the view will be moving radially also.
+
 # Contact
 Problems running? Contact me. pcrumm@p3net.net
 UID: 804005575

@@ -20,7 +20,7 @@ class Camera
 
   // The camera's current rotation, in degrees. We take -z to be
   // at 0 degrees.
-  int rotation;
+  float rotation;
 
   // Camera up and down rotation (altitude). Positive is up.
   int altitude;
@@ -72,6 +72,11 @@ public:
   void rotateCameraLR (int rotation)
   {
     this->rotation += rotation;
+  }
+
+  void setLRRotation(float rotation)
+  {
+    this->rotation = rotation;
   }
 
   // This will rotate the camera up and down. 

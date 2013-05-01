@@ -117,6 +117,16 @@ public:
       planets[i]->orbit();
     }
   }
+
+  vec4 get_planet_position(int planet_index)
+  {
+    return planets[planet_index]->get_position();
+  }
+
+  float get_planet_rotation(int planet_index)
+  {
+    return planets[planet_index]->orbit_angle;
+  }
 private:
   std::vector<Planet*> planets;
 } ss;

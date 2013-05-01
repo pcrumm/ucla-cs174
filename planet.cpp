@@ -186,3 +186,10 @@ Planet::set_orbit_speed(float s)
 {
   this->orbit_speed = s;
 }
+
+vec4
+Planet::get_position()
+{
+  vec4 pos = RotateY (this->orbit_angle) * Translate (this->pos_x, this->pos_y, this->pos_z)*vec4(0, 0, 0, 1);
+  return pos;
+}

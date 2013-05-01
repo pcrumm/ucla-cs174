@@ -87,6 +87,9 @@ public:
   void
   set_orbit_speed(float s);
 
+  vec4
+  get_position();
+
 protected:
   int Index;
   float pos_x, pos_y, pos_z;
