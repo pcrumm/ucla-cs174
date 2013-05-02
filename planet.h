@@ -27,6 +27,7 @@ public:
   color4 diffuse;
   color4 specular;
   float shininess;
+  int shade_type;
 
   Planet(color4 ambient, color4 diffuse, color4 specular);
 

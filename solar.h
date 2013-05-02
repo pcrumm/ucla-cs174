@@ -103,6 +103,9 @@ public:
       glUniform1f( glGetUniformLocation(program, "Shininess"),
            p->shininess );
 
+      glUniform1f (glGetUniformLocation(program, "ShadeType"),
+            p->shade_type);
+
       glDrawArrays (GL_TRIANGLES, 0, p->NumVertices);
     }
   }

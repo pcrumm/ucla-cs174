@@ -2,6 +2,7 @@
 varying  vec3 fN;
 varying  vec3 fL;
 varying  vec3 fE;
+varying  vec4 gourd_color;
 
 uniform vec4 AmbientProduct, DiffuseProduct, SpecularProduct;
 uniform mat4 ModelView;
@@ -9,6 +10,7 @@ uniform vec4 LightPosition;
 uniform float Shininess;
 
 uniform float isSun;
+uniform float ShadeType;
 
 void main() 
 { 
@@ -32,7 +34,14 @@ void main()
   specular = vec4(0.0, 0.0, 0.0, 1.0);
     }
 
-    gl_FragColor = ambient + diffuse + specular;
+    if (ShadeType > 1.5 && ShadeType < 2.5) // Gourd shading... throw away what we did here
+    {
+        gl_FragColor = gourd_color;
+    }
+    else // Phong or flat shading
+    {
+        gl_FragColor = ambient + diffuse + specular;
+    }
     gl_FragColor.a = 1.0;
 
     // If it's the sun, undo all of this magic and just paint it red

@@ -40,7 +40,7 @@ Planet::triangle( const point4& a, const point4& b, const point4& c, shader s )
       points[Index] = c;
       Index++;
     }
-    else // this is currently SHADE_GOURD. these need to be separated sometime
+    else
     {
       normals[Index] = vec3 (a.x, a.y, a.z);
       points[Index] = a;
@@ -115,6 +115,7 @@ Planet::generate(int num_subdivisions, shader s)
   normals = new vec3[NumVertices];
 
   tetrahedron (this->NumTimesToSubdivide, s);
+  this->shade_type = s;
 }
 
 /**
