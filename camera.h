@@ -112,7 +112,7 @@ public:
   mat4 getMVPMatrix()
   {
     // First, we need to get the projection matrix...
-    mat4 p = Perspective (this->fov, this->window_width / this->window_height, .1, 100);
+    mat4 p = Perspective (this->fov, this->window_width / this->window_height, .1, 1000);
 
     // Projection * Model_View will get us down into world coordinates
     mat4 mvp = p*this->getMVMatrix();

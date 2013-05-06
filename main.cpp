@@ -181,30 +181,11 @@ keyboard( unsigned char key, int x, int y )
 
     // translation
     case 'i': camera.moveOnZAxis(1); break;
-    case 'j': camera.moveOnXAxis(-1); break;
-    case 'k': camera.moveOnXAxis(1); break;
-    case 'm': camera.moveOnZAxis(-1); break;
-
-    // field of view
-    case 'n': camera.changeFOV(-5); break;
-    case 'w': camera.changeFOV(5); break;
+    case 'o': camera.moveOnZAxis(-1); break;
 
     case ' ':  // reset values to their defaults
         camera.reset();
         break;
-    }
-
-    glutPostRedisplay();
-}
-
-void specialKeys (int key, int x, int y)
-{
-    switch (key)
-    {
-        case GLUT_KEY_LEFT: camera.rotateCamera(dr); break;
-        case GLUT_KEY_RIGHT: camera.rotateCamera(-dr); break;
-        case GLUT_KEY_UP: camera.moveOnYAxis(1); break;
-        case GLUT_KEY_DOWN: camera.moveOnYAxis(-1); break;
     }
 
     glutPostRedisplay();
@@ -233,7 +214,7 @@ main( int argc, char **argv )
     glewInit();
 
     // Set the default camera position
-    camera.setDefaultPos (0, 0, 15);
+    camera.setDefaultPos (0, 0, 30);
 
     // And make sure the window size is set...
     camera.setWindowDim (window_width, window_height);
@@ -243,7 +224,6 @@ main( int argc, char **argv )
     glutDisplayFunc( display );
     glutKeyboardFunc( keyboard );
     glutReshapeFunc( reshape );
-    glutSpecialFunc (specialKeys);
 
     glutMainLoop();
     return 0;
