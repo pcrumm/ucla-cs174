@@ -151,21 +151,10 @@ display( void )
 
      int cube_color;
 
-     for (int i = 0; i < 8; i++)
+     for (int i = 0; i < 2; i++)
      {
-        t = Translate (10, 10, 10);
-
-        // Make x negative for i < 5
-        if (i < 4)
-            t[0][3] = -t[0][3];
-
-        // Make z negative for even
-        if (i % 2 == 0 || i == 0)
-            t[2][3] = -t[2][3];
-
-        // Make y negative for 0, 1, 4, and 5
-        if (i == 0 || i == 1 || i == 4 || i == 5)
-            t[1][3] = -t[1][3];
+        // Place our cubes at ((+/-) 10, 0, 0)
+        t = Translate (10 * pow(-1, i), 0, 0);
 
         glUniformMatrix4fv (translation, 1, GL_TRUE, t);
 
@@ -244,7 +233,7 @@ main( int argc, char **argv )
     glewInit();
 
     // Set the default camera position
-    camera.setDefaultPos (0, 0, 30);
+    camera.setDefaultPos (0, 0, 15);
 
     // And make sure the window size is set...
     camera.setWindowDim (window_width, window_height);
