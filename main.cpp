@@ -12,8 +12,8 @@ typedef Angel::vec2  point2;
 
 const int NumVertices = 36; //(6 faces)(2 triangles/face)(3 vertices/triangle)
 
-point4 points[NumVertices];
-color4 colors[NumVertices];
+point4 points[NumVertices]; // cube points
+point2 cubeUV[NumVertices]; // for texture mapping
 
 // Vertices of a 5x5 cube centered at origin, sides aligned with axes
 point4 vertices[8] = {
@@ -27,18 +27,6 @@ point4 vertices[8] = {
     point4(  02.5, -02.5, -02.5, 1.0 )
 };
 
-// RGBA olors
-color4 vertex_colors[8] = {
-    color4( 0.0, 0.0, 0.0, 1.0 ),  // black
-    color4( 1.0, 0.0, 0.0, 1.0 ),  // red
-    color4( 1.0, 1.0, 0.0, 1.0 ),  // yellow
-    color4( 0.0, 1.0, 0.0, 1.0 ),  // green
-    color4( 0.0, 0.0, 1.0, 1.0 ),  // blue
-    color4( 1.0, 0.0, 1.0, 1.0 ),  // magenta
-    color4( 0.5, 0.5, 0.5, 1.0 ),  // not white
-    color4( 0.0, 1.0, 1.0, 1.0 )   // cyan
-};
-
 const GLfloat  dr = 10;
 
 GLuint  mvp;  // model-view-projection matrix
@@ -46,10 +34,10 @@ GLuint world_transform; // transforms the world for the camera
 
 // Projection transformation parameters
 
-GLuint current_color = 0;
-
-GLuint currentColor; // uniform for passing the current color to the shader
+GLuint cube_texture; // Texture identifier
+GLint uniformTex; // Texture uniform
 GLuint translation; // translation matrix
+GLuint vao;
 
 GLfloat window_width = 700, window_height = 700;
 
@@ -63,12 +51,12 @@ int Index = 0;
 void
 quad( int a, int b, int c, int d )
 {
-    colors[Index] = vertex_colors[a]; points[Index] = vertices[a]; Index++;
-    colors[Index] = vertex_colors[b]; points[Index] = vertices[b]; Index++;
-    colors[Index] = vertex_colors[c]; points[Index] = vertices[c]; Index++;
-    colors[Index] = vertex_colors[a]; points[Index] = vertices[a]; Index++;
-    colors[Index] = vertex_colors[c]; points[Index] = vertices[c]; Index++;
-    colors[Index] = vertex_colors[d]; points[Index] = vertices[d]; Index++;
+    points[Index] = vertices[a]; cubeUV[Index] = point2(0.0f, 1.0f); Index++;
+    points[Index] = vertices[b]; cubeUV[Index] = point2(0.0f, 0.0f); Index++;
+    points[Index] = vertices[c]; cubeUV[Index] = point2(1.0f, 0.0f); Index++;
+    points[Index] = vertices[a]; cubeUV[Index] = point2(0.0f, 1.0f); Index++;
+    points[Index] = vertices[c]; cubeUV[Index] = point2(1.0f, 0.0f); Index++;
+    points[Index] = vertices[d]; cubeUV[Index] = point2(1.0f, 1.0f); Index++;
 }
 
 //----------------------------------------------------------------------------
@@ -91,10 +79,10 @@ colorcube()
 void
 init()
 {
+    glEnable( GL_DEPTH_TEST );
     colorcube();
 
     // Create a vertex array object
-    GLuint vao;
     glGenVertexArraysAPPLE( 1, &vao );
     glBindVertexArrayAPPLE( vao );
 
@@ -102,10 +90,9 @@ init()
     GLuint buffer;
     glGenBuffers( 1, &buffer );
     glBindBuffer( GL_ARRAY_BUFFER, buffer );
-    glBufferData( GL_ARRAY_BUFFER, sizeof(points) + sizeof(colors),
+    glBufferData( GL_ARRAY_BUFFER, sizeof(points),
           NULL, GL_STATIC_DRAW );
     glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(points), points );
-    glBufferSubData( GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors );
 
     // Load shaders and use the resulting shader program
     GLuint program = InitShader( "vshader.glsl", "fshader.glsl" );
@@ -117,18 +104,55 @@ init()
     glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0,
                BUFFER_OFFSET(0) );
 
-    GLuint vColor = glGetAttribLocation( program, "vColor" ); 
-    glEnableVertexAttribArray( vColor );
-    glVertexAttribPointer( vColor, 4, GL_FLOAT, GL_FALSE, 0,
-               BUFFER_OFFSET(sizeof(points)) );
+    // Map our texture coordinates
+    GLuint tbuffer;
+    int tsize =  sizeof(cubeUV);
+    glGenBuffers( 1, &tbuffer );
+    glBindBuffer( GL_ARRAY_BUFFER, tbuffer );
+    glBufferData( GL_ARRAY_BUFFER, tsize, cubeUV, GL_STATIC_DRAW );
+    GLuint vTexCoords = glGetAttribLocation( program, "vTexCoords" );
+    glEnableVertexAttribArray( vTexCoords );
+    glVertexAttribPointer( vTexCoords, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
 
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindVertexArrayAPPLE(0);
+
+    // MVP/WT matrices
     mvp = glGetUniformLocation( program, "mvp" );
     world_transform = glGetUniformLocation (program, "wt");
 
-    currentColor = glGetUniformLocation (program, "currentColor");
     translation = glGetUniformLocation (program, "translation");
+
+    glEnable( GL_TEXTURE_2D );
+
+    // Load texture
+    TgaImage slab;
+    if (!slab.loadTGA("slab.tga"))
+    {
+        printf("Could not load texture file.\n");
+        exit(1);
+    }
+
+    glGenTextures(1, &cube_texture);
+    glBindTexture(GL_TEXTURE_2D, cube_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, slab.width, slab.height, 0,
+                 (slab.byteCount == 3) ? GL_BGR : GL_BGRA,
+                 GL_UNSIGNED_BYTE, slab.data );
     
-    glEnable( GL_DEPTH_TEST );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
+
+    uniformTex = glGetUniformLocation(program, "Tex");
+    glUniform1i(uniformTex, 0);
+
+    glDisable( GL_TEXTURE_2D );
+
     glClearColor( 1.0, 1.0, 1.0, 1.0 ); 
 }
 
@@ -150,7 +174,7 @@ display( void )
      // Base translation matrix
      mat4 t;
 
-     int cube_color;
+     glBindVertexArrayAPPLE( vao );
 
      for (int i = 0; i < 2; i++)
      {
@@ -159,10 +183,7 @@ display( void )
 
         glUniformMatrix4fv (translation, 1, GL_TRUE, t);
 
-        // Color
-        cube_color = 0;
-        glUniform4f (currentColor, vertex_colors[cube_color][0], vertex_colors[cube_color][1], vertex_colors[cube_color][2], vertex_colors[cube_color][3]);
-
+        glBindTexture( GL_TEXTURE_2D, cube_texture);
         glDrawArrays( GL_TRIANGLES, 0, NumVertices );
      }
 
@@ -213,6 +234,7 @@ main( int argc, char **argv )
     glutInitWindowSize( window_width, window_height );
     glutCreateWindow( "Assignment 4" );
     glewInit();
+
 
     // Set the default camera position
     camera.setDefaultPos (0, 0, 30);
