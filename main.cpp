@@ -8,11 +8,13 @@
 
 typedef Angel::vec4  color4;
 typedef Angel::vec4  point4;
+typedef Angel::vec3  point3;
 typedef Angel::vec2  point2;
 
 const int NumVertices = 36; //(6 faces)(2 triangles/face)(3 vertices/triangle)
 
 point4 points[NumVertices]; // cube points
+point3 cubeNormals[NumVertices];
 point2 cubeUV[NumVertices]; // for texture mapping
 
 // Vertices of a 5x5 cube centered at origin, sides aligned with axes
@@ -38,6 +40,7 @@ GLuint cube_texture; // Texture identifier
 GLint uniformTex; // Texture uniform
 GLuint translation; // translation matrix
 GLuint vao;
+GLuint program;
 
 GLfloat window_width = 700, window_height = 700;
 
@@ -48,15 +51,20 @@ GLfloat window_width = 700, window_height = 700;
 
 int Index = 0;
 
-void
-quad( int a, int b, int c, int d )
+void quad( int a, int b, int c, int d, const point3& normal )
 {
-    points[Index] = vertices[a]; cubeUV[Index] = point2(0.0f, 1.0f); Index++;
-    points[Index] = vertices[b]; cubeUV[Index] = point2(0.0f, 0.0f); Index++;
-    points[Index] = vertices[c]; cubeUV[Index] = point2(1.0f, 0.0f); Index++;
-    points[Index] = vertices[a]; cubeUV[Index] = point2(0.0f, 1.0f); Index++;
-    points[Index] = vertices[c]; cubeUV[Index] = point2(1.0f, 0.0f); Index++;
-    points[Index] = vertices[d]; cubeUV[Index] = point2(1.0f, 1.0f); Index++;
+    points[Index] = vertices[a]; cubeNormals[Index] = normal;
+    cubeUV[Index] = point2(0.0f, 1.0f); Index++;
+    points[Index] = vertices[b]; cubeNormals[Index] = normal;
+    cubeUV[Index] = point2(0.0f, 0.0f); Index++;
+    points[Index] = vertices[c]; cubeNormals[Index] = normal;
+    cubeUV[Index] = point2(1.0f, 0.0f); Index++;
+    points[Index] = vertices[a]; cubeNormals[Index] = normal;
+    cubeUV[Index] = point2(0.0f, 1.0f); Index++;
+    points[Index] = vertices[c]; cubeNormals[Index] = normal;
+    cubeUV[Index] = point2(1.0f, 0.0f); Index++;
+    points[Index] = vertices[d]; cubeNormals[Index] = normal;
+    cubeUV[Index] = point2(1.0f, 1.0f); Index++;
 }
 
 //----------------------------------------------------------------------------
@@ -65,12 +73,12 @@ quad( int a, int b, int c, int d )
 void
 colorcube()
 {
-    quad( 1, 0, 3, 2 );
-    quad( 2, 3, 7, 6 );
-    quad( 3, 0, 4, 7 );
-    quad( 6, 5, 1, 2 );
-    quad( 4, 5, 6, 7 );
-    quad( 5, 4, 0, 1 );
+    quad( 1, 0, 3, 2, point3( 0.0f,  0.0f,  1.0f) );
+    quad( 2, 3, 7, 6, point3( 1.0f,  0.0f,  0.0f) );
+    quad( 3, 0, 4, 7, point3( 0.0f, -1.0f,  0.0f) );
+    quad( 6, 5, 1, 2, point3( 0.0f,  1.0f,  0.0f) );
+    quad( 4, 5, 6, 7, point3( 0.0f,  0.0f, -1.0f) );
+    quad( 5, 4, 0, 1, point3(-1.0f,  0.0f,  0.0f) );
 }
 
 //----------------------------------------------------------------------------
@@ -82,27 +90,31 @@ init()
     glEnable( GL_DEPTH_TEST );
     colorcube();
 
+    program = InitShader( "vshader.glsl", "fshader.glsl" );
+    glUseProgram(program);
+
     // Create a vertex array object
     glGenVertexArraysAPPLE( 1, &vao );
     glBindVertexArrayAPPLE( vao );
 
     // Create and initialize a buffer object
-    GLuint buffer;
-    glGenBuffers( 1, &buffer );
-    glBindBuffer( GL_ARRAY_BUFFER, buffer );
-    glBufferData( GL_ARRAY_BUFFER, sizeof(points),
-          NULL, GL_STATIC_DRAW );
-    glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(points), points );
+     GLuint buffer[2];
+     glGenBuffers( 2, buffer );
 
-    // Load shaders and use the resulting shader program
-    GLuint program = InitShader( "vshader.glsl", "fshader.glsl" );
-    glUseProgram( program );
+     int psize = sizeof(points);
+     int nsize = sizeof(cubeNormals);
 
-    // set up vertex arrays
-    GLuint vPosition = glGetAttribLocation( program, "vPosition" );
-    glEnableVertexAttribArray( vPosition );
-    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0,
-               BUFFER_OFFSET(0) );
+     glBindBuffer( GL_ARRAY_BUFFER, buffer[0] );
+     glBufferData( GL_ARRAY_BUFFER, psize, points, GL_STATIC_DRAW );
+     GLuint vPosition = glGetAttribLocation( program, "vPosition" );
+     glEnableVertexAttribArray( vPosition );
+     glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
+
+     glBindBuffer( GL_ARRAY_BUFFER, buffer[1] );
+     glBufferData( GL_ARRAY_BUFFER, nsize, cubeNormals, GL_STATIC_DRAW );
+     GLuint vNormal = glGetAttribLocation( program, "vNormal" );
+     glEnableVertexAttribArray( vNormal );
+     glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
 
     // Map our texture coordinates
     GLuint tbuffer;
@@ -114,44 +126,11 @@ init()
     glEnableVertexAttribArray( vTexCoords );
     glVertexAttribPointer( vTexCoords, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
 
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindVertexArrayAPPLE(0);
-
     // MVP/WT matrices
     mvp = glGetUniformLocation( program, "mvp" );
     world_transform = glGetUniformLocation (program, "wt");
 
     translation = glGetUniformLocation (program, "translation");
-
-    glEnable( GL_TEXTURE_2D );
-
-    // Load texture
-    TgaImage slab;
-    if (!slab.loadTGA("slab.tga"))
-    {
-        printf("Could not load texture file.\n");
-        exit(1);
-    }
-
-    glGenTextures(1, &cube_texture);
-    glBindTexture(GL_TEXTURE_2D, cube_texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, slab.width, slab.height, 0,
-                 (slab.byteCount == 3) ? GL_BGR : GL_BGRA,
-                 GL_UNSIGNED_BYTE, slab.data );
-    
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
-
-    uniformTex = glGetUniformLocation(program, "Tex");
-    glUniform1i(uniformTex, 0);
-
-    glDisable( GL_TEXTURE_2D );
 
     glClearColor( 1.0, 1.0, 1.0, 1.0 ); 
 }
@@ -182,6 +161,46 @@ display( void )
         t = Translate (10 * pow(-1, i), 0, 0);
 
         glUniformMatrix4fv (translation, 1, GL_TRUE, t);
+
+        // Texturing
+        glEnable( GL_TEXTURE_2D );
+
+        // Load texture
+        TgaImage slab;
+        if (!slab.loadTGA("tennis.tga"))
+        {
+            printf("Could not load texture file.\n");
+            exit(1);
+        }
+
+        glGenTextures(1, &cube_texture);
+        glBindTexture(GL_TEXTURE_2D, cube_texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, 4, slab.width, slab.height, 0,
+                     (slab.byteCount == 3) ? GL_BGR : GL_BGRA,
+                     GL_UNSIGNED_BYTE, slab.data );
+        
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+
+        if (i == 0) // first uses nearest-neighbor filtering
+        {
+            glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        }
+        else //mipmap the second with trilinear filtering
+        {
+            glGenerateMipmap(GL_TEXTURE_2D);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        }
+
+        uniformTex = glGetUniformLocation(program, "Tex");
+        glUniform1i(uniformTex, 0);
+
+        glDisable( GL_TEXTURE_2D );
+
 
         glBindTexture( GL_TEXTURE_2D, cube_texture);
         glDrawArrays( GL_TRIANGLES, 0, NumVertices );
@@ -230,7 +249,7 @@ int
 main( int argc, char **argv )
 {
     glutInit( &argc, argv );
-    glutInitDisplayMode(GLUT_RGBA);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH);
     glutInitWindowSize( window_width, window_height );
     glutCreateWindow( "Assignment 4" );
     glewInit();
