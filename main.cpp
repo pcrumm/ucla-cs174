@@ -4,6 +4,7 @@
 
 #include "Angel.h"
 #include "camera.h"
+#include "tga.h"
 
 typedef Angel::vec4  color4;
 typedef Angel::vec4  point4;
