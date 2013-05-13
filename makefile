@@ -3,4 +3,4 @@ all:
 clean:
 	rm -rf *o project4 *.dSYM *.tgz
 dist:
-	tar cvzf project4-phil-crumm.tgz *.h *.cpp *.md *.glsl makefile
+	tar cvzf project4-phil-crumm.tgz *.h *.cpp *.md *.glsl makefile *.tga
