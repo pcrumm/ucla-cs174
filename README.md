@@ -14,9 +14,11 @@ Use TA's code to load TGA images into display buffer.
 The loaded texture is mapped onto the face of a cube.
 
 ## Create a Second Cube with a Zoomed out Texture
-This second cube (hereinafter #4, like the spec), is located on the left.
+This second cube (hereinafter #4, like the spec), is located on the left. Its texture is zoomed out by 50%, or a factor
+of 2. Since it's a cube, this means we'll see 2^2=4 repeats of the pattern.
 
 ## Implement Tri-Linear Filtering for the Left-Most Cube (#4), Nearest Neighbor for Right-Most Cube
+See main.cpp:193-208 for details.
 
 ## Cube Position
 Both cubes are visible within the default view.

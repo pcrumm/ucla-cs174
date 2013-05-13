@@ -42,6 +42,8 @@ GLuint translation; // translation matrix
 GLuint vao;
 GLuint program;
 
+GLuint tex_zoom; // Texture zoom
+
 GLfloat window_width = 700, window_height = 700;
 
 //----------------------------------------------------------------------------
@@ -132,6 +134,8 @@ init()
 
     translation = glGetUniformLocation (program, "translation");
 
+    tex_zoom = glGetUniformLocation (program, "tex_zoom");
+
     glClearColor( 1.0, 1.0, 1.0, 1.0 ); 
 }
 
@@ -152,6 +156,9 @@ display( void )
 
      // Base translation matrix
      mat4 t;
+
+     // Texture zoom
+     float zoom;
 
      glBindVertexArrayAPPLE( vao );
 
@@ -187,17 +194,23 @@ display( void )
         {
             glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+            zoom = 1.0; // Don't scale
         }
-        else //mipmap the second with trilinear filtering
+        else //mipmap the second with trilinear filtering and zoom out
         {
             glGenerateMipmap(GL_TEXTURE_2D);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+            zoom = 2.0; // Zoom out by 50%
         }
 
         uniformTex = glGetUniformLocation(program, "Tex");
         glUniform1i(uniformTex, 0);
+
+        glUniform1f(tex_zoom, zoom);
 
         glDisable( GL_TEXTURE_2D );
 
